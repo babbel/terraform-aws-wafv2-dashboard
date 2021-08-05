@@ -6,7 +6,8 @@ This modules creates a CloudWatch Dashboard for a WAFv2 showing the overall `All
 
 ```tf
 module "wafv2-dashboard" {
-  source = "babbel/wafv2-dashboard/aws"
+  source  = "babbel/wafv2-dashboard/aws"
+  version = "~> 1.0"
 
   wafv2_web_acl = aws_wafv2_web_acl.example
 }
@@ -16,7 +17,8 @@ Please note: If you want to create a dashbaord for a WAFv2 of a CloudFront distr
 
 ```tf
 module "wafv2-dashboard-example" {
-  source = "babbel/wafv2-dashboard/aws"
+  source  = "babbel/wafv2-dashboard/aws"
+  version = "~> 1.0"
 
   providers = {
     aws = aws.us-east-1
