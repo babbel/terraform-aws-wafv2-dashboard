@@ -1,6 +1,7 @@
 variable "wafv2_web_acl" {
   type = object({
-    name = string
+    name  = string
+    scope = string
 
     rule = list(
       object({
