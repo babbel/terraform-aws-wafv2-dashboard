@@ -23,61 +23,86 @@ resource "aws_cloudwatch_dashboard" "this" {
 
           metrics = concat(
             [
-              [
-                "AWS/WAFV2",
-                "AllowedRequests",
-                "WebACL", var.wafv2_web_acl.name,
-                "Rule", var.wafv2_web_acl.visibility_config[0].metric_name,
-                {
-                  color = "#1f77b4" # blue
-                }
-              ],
+              concat(
+                [
+                  "AWS/WAFV2",
+                  "AllowedRequests",
+                  "WebACL", var.wafv2_web_acl.name,
+                  "Rule", var.wafv2_web_acl.visibility_config[0].metric_name,
+                ],
+                var.wafv2_web_acl.scope == "REGIONAL" ? ["Region", data.aws_region.current.name] : [],
+                [
+                  {
+                    color = "#1f77b4" # blue
+                  }
+                ]
+              ),
             ],
             [
               for rule in var.wafv2_web_acl.rule :
               length(rule.action) == 1 ?
               (
                 length(rule.action[0].allow) == 1 ?
-                [
-                  "AWS/WAFV2",
-                  "AllowedRequests",
-                  "WebACL", var.wafv2_web_acl.name,
-                  "Rule", rule.visibility_config[0].metric_name,
-                  {
-                    color = "#2ca02c" # green
-                  }
-                ] :
-                (
-                  length(rule.action[0].count) == 1 ?
+                concat(
                   [
                     "AWS/WAFV2",
-                    "CountedRequests",
+                    "AllowedRequests",
                     "WebACL", var.wafv2_web_acl.name,
                     "Rule", rule.visibility_config[0].metric_name,
+                  ],
+                  var.wafv2_web_acl.scope == "REGIONAL" ? ["Region", data.aws_region.current.name] : [],
+                  [
                     {
-                      color = "#ff7f0e" # orange
+                      color = "#2ca02c" # green
                     }
-                  ] :
-                  (
-                    length(rule.action[0].block) == 1 ?
+                  ]
+                ) :
+                (
+                  length(rule.action[0].count) == 1 ?
+                  concat(
                     [
                       "AWS/WAFV2",
-                      "BlockedRequests",
+                      "CountedRequests",
                       "WebACL", var.wafv2_web_acl.name,
                       "Rule", rule.visibility_config[0].metric_name,
-                      {
-                        color = "#d62728" # red
-                      }
-                    ] :
+                    ],
+                    var.wafv2_web_acl.scope == "REGIONAL" ? ["Region", data.aws_region.current.name] : [],
                     [
-                      "Unexpected structure for `wafv2_web_acl` resource",
-                      "The `action` block must have subblock with `allow`, `count`, or `block`.",
-                      "", "",
-                      "", "",
                       {
-                        color = ""
+                        color = "#ff7f0e" # orange
                       }
                     ]
+                  ) :
+                  (
+                    length(rule.action[0].block) == 1 ?
+                    concat(
+                      [
+                        "AWS/WAFV2",
+                        "BlockedRequests",
+                        "WebACL", var.wafv2_web_acl.name,
+                        "Rule", rule.visibility_config[0].metric_name,
+                      ],
+                      var.wafv2_web_acl.scope == "REGIONAL" ? ["Region", data.aws_region.current.name] : [],
+                      [
+                        {
+                          color = "#d62728" # red
+                        }
+                      ]
+                    ) :
+                    concat(
+                      [
+                        "Unexpected structure for `wafv2_web_acl` resource",
+                        "The `action` block must have subblock with `allow`, `count`, or `block`.",
+                        "", "",
+                        "", "",
+                      ],
+                      var.wafv2_web_acl.scope == "REGIONAL" ? ["", ""] : [],
+                      [
+                        {
+                          color = ""
+                        }
+                      ]
+                    )
                   )
                 )
               ) :
@@ -85,47 +110,67 @@ resource "aws_cloudwatch_dashboard" "this" {
                 length(rule.override_action) == 1 ?
                 (
                   length(rule.override_action[0].count) == 1 ?
-                  [
-                    "AWS/WAFV2",
-                    "CountedRequests",
-                    "WebACL", var.wafv2_web_acl.name,
-                    "Rule", rule.visibility_config[0].metric_name,
-                    {
-                      color = "#ff7f0e" # orange
-                    }
-                  ] :
-                  (
-                    length(rule.override_action[0].none) == 1 ?
+                  concat(
                     [
-                      # assuming that managed rules are blocking
                       "AWS/WAFV2",
-                      "BlockedRequests",
+                      "CountedRequests",
                       "WebACL", var.wafv2_web_acl.name,
                       "Rule", rule.visibility_config[0].metric_name,
-                      {
-                        color = "#d62728" # red
-                      }
-                    ] :
+                    ],
+                    var.wafv2_web_acl.scope == "REGIONAL" ? ["Region", data.aws_region.current.name] : [],
                     [
-                      "Unexpected structure for `wafv2_web_acl` resource",
-                      "The `override_action` block must have a subblock with `count` or `none`.",
-                      "", "",
-                      "", "",
                       {
-                        color = ""
+                        color = "#ff7f0e" # orange
                       }
                     ]
+                  ) :
+                  (
+                    length(rule.override_action[0].none) == 1 ?
+                    concat(
+                      [
+                        # assuming that managed rules are blocking
+                        "AWS/WAFV2",
+                        "BlockedRequests",
+                        "WebACL", var.wafv2_web_acl.name,
+                        "Rule", rule.visibility_config[0].metric_name,
+                      ],
+                      var.wafv2_web_acl.scope == "REGIONAL" ? ["Region", data.aws_region.current.name] : [],
+                      [
+                        {
+                          color = "#d62728" # red
+                        }
+                      ]
+                    ) :
+                    concat(
+                      [
+                        "Unexpected structure for `wafv2_web_acl` resource",
+                        "The `override_action` block must have a subblock with `count` or `none`.",
+                        "", "",
+                        "", "",
+                      ],
+                      var.wafv2_web_acl.scope == "REGIONAL" ? ["", ""] : [],
+                      [
+                        {
+                          color = ""
+                        }
+                      ]
+                    )
                   )
                 ) :
-                [
-                  "Unexpected structure for `wafv2_web_acl` resource",
-                  "The `rule` block must have a subblock with `action` or `override_action`.",
-                  "", "",
-                  "", "",
-                  {
-                    color = ""
-                  }
-                ]
+                concat(
+                  [
+                    "Unexpected structure for `wafv2_web_acl` resource",
+                    "The `rule` block must have a subblock with `action` or `override_action`.",
+                    "", "",
+                    "", "",
+                  ],
+                  var.wafv2_web_acl.scope == "REGIONAL" ? ["", ""] : [],
+                  [
+                    {
+                      color = ""
+                    }
+                  ]
+                )
               )
             ]
           )
