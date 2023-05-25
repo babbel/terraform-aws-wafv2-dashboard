@@ -30,11 +30,19 @@ resource "aws_wafv2_web_acl" "example" {
         name        = "AWSManagedRulesCommonRuleSet"
         vendor_name = "AWS"
 
-        excluded_rule {
+        rule_action_override {
+          action_to_use {
+            count {}
+          }
+
           name = "SizeRestrictions_QUERYSTRING"
         }
 
-        excluded_rule {
+        rule_action_override {
+          action_to_use {
+            count {}
+          }
+
           name = "NoUserAgent_HEADER"
         }
 
