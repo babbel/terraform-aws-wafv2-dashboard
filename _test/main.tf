@@ -31,19 +31,19 @@ resource "aws_wafv2_web_acl" "example" {
         vendor_name = "AWS"
 
         rule_action_override {
+          name = "SizeRestrictions_QUERYSTRING"
+
           action_to_use {
             count {}
           }
-
-          name = "SizeRestrictions_QUERYSTRING"
         }
 
         rule_action_override {
+          name = "NoUserAgent_HEADER"
+
           action_to_use {
             count {}
           }
-
-          name = "NoUserAgent_HEADER"
         }
 
         scope_down_statement {
