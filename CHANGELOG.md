@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.1.1
+
+- [Use rule_action_override on aws_wafv2_web_acl](https://github.com/babbel/terraform-aws-wafv2-dashboard/pull/18)
+
 ## v1.1.0
 
 - [Bump hashicorp/aws dependency](https://github.com/babbel/terraform-aws-wafv2-dashboard/pull/11)
