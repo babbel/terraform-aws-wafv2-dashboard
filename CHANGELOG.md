@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.2.0
+
+- [Relax version constraints for modules](https://github.com/babbel/terraform-aws-wafv2-dashboard/pull/20)
+
 ## v1.1.1
 
 - [Use rule_action_override on aws_wafv2_web_acl](https://github.com/babbel/terraform-aws-wafv2-dashboard/pull/18)
